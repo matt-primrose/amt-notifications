@@ -80,7 +80,9 @@ module.exports.CreateAmtEventsHandler = function (parent) {
         var x = ParseWsman(data);
         if (x != null) {
             // TODO: Dispatch this event, we need to keep a running Intel AMT log for each machine.
-            console.log('Got Intel AMT event from ' + amthost + ', nodeid: ' + nodeid.substring(0, 8));
+            if (nodeid && amthost){
+                console.log('Got Intel AMT event from ' + amthost + ', nodeid: ' + nodeid.substring(0, 8));
+            }
             //console.log(x);
         }
         return x;

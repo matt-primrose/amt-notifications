@@ -18,10 +18,12 @@ limitations under the License.
 * @module wsserver
 */
 
-/*
-* @fileoverview Simple WebSocket Server
-* @author Matt Primrose
-* @version v0.1.0
+/**
+* @description Simple Websocket server
+* @author Matt C Primrose
+* @copyright Intel Corporation 2019
+* @license Apache-2.0
+* @version v0.0.1
 */
 
 "use strict";
