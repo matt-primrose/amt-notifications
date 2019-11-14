@@ -9,6 +9,7 @@
   "dependencies": {},
   "devDependencies": {
     "jest": "^24.8.0",
+    "json-stringify-safe": "^5.0.1",
     "ws": "^7.1.1",
     "xmldom": "^0.1.27"
   },
