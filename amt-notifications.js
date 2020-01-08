@@ -17,7 +17,7 @@ limitations under the License.
 /**
 * @description AMT Notification Service
 * @author Matt C Primrose
-* @copyright Intel Corporation 2019
+* @copyright Intel Corporation 2020
 * @license Apache-2.0
 * @version v0.0.1
 */
@@ -35,15 +35,14 @@ function CreateNotificationHandler(logger){
     obj.connectionHandler = function(type, message, connection){
         if (obj.log !== null) { obj.log('Received AMT event!'); } else { console.log('Received AMT event!'); }
         if (type == "message"){
-            //console.log('Raw Message From AMT:\n' + message + '\n');
+            console.log('Raw Message From AMT:\n' + message + '\n');
             const parseString = require('xml2js').parseString;
             parseString(message, function(err, result){
                 if (err) { console.log("Error: ", err); }
                 else {
-                    const Header = result["a:Envelope"]["a:Header"][0]
+                    const Header = result["a:Envelope"]["a:Header"][0];
                     const Body = result["a:Envelope"]["a:Body"][0]["g:CIM_AlertIndication"][0];
                     let message = new Object();
-                    message.UUID = Header["b:MessageID"][0];
                     message.OwningEntity = Body["g:OwningEntity"][0];
                     message.Time = Body["g:IndicationTime"][0]["h:Datetime"];
                     message.AlertType = alertTypeMapping[Body["g:AlertType"][0]];
