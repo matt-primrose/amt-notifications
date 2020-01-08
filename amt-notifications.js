@@ -36,20 +36,15 @@ function CreateNotificationHandler(logger){
     obj.connectionHandler = function(type, message, connection){
         if (obj.log !== null) { obj.log('Received AMT event!'); }
         else { console.log('Received AMT event!'); }
-        let stringify = require('json-stringify-safe');
-        if (message.socket){
-            if (message.socket._httpMessage){
-                console.log(parseJSONString(stringify(message.socket._httpMessage)));
-            }
+        if (type == "message"){
+            console.log('Raw Message From AMT:\n' + message + '\n');
+            const events = require('./amtevents');
+            let amtEvents = events.CreateAmtEventsHandler();
+            let parsedMsg = amtEvents.handleAmtEvent(message, null, null);
+            if (parsedMsg == null){ parsedMsg = "Unable to parse event message."; }
+            if (obj.log !== null) { obj.log(JSON.stringify(parsedMsg)); }
+            else { console.log(JSON.stringify(parsedMsg)); }
         }
-        //console.log('Raw Message From AMT:\n' + parseJSONString(stringify(message)) + '\n');
-        // const events = require('./amtevents');
-        // let amtEvents = events.CreateAmtEventsHandler();
-        // let parsedMsg = amtEvents.handleAmtEvent(message, null, null);
-        // if (parsedMsg == null){ parsedMsg = "Unable to parse event message."; }
-        // if (obj.log !== null) { obj.log(JSON.stringify(parsedMsg)); }
-        // else { console.log(JSON.stringify(parsedMsg)); }
-
     };
     return obj;
 }

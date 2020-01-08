@@ -28,6 +28,7 @@ limitations under the License.
 
 "use strict";
 const http = require('http');
+const qs = require('querystring');
 
 /**
  * @constructor WebSocketServer
@@ -40,7 +41,12 @@ function HttpServer(port, connectionHandler, consoleLog) {
     let obj = new Object();
     obj.port = port;
     obj.httpServer = new http.createServer(function(req, res){
-        obj.eventHandler('message', res);
+        const chunks = [];
+        req.on('data', chunk => chunks.push(chunk));
+        req.on('end', () => {
+            const data = Buffer.concat(chunks);
+            obj.eventHandler('message', data);
+        });
     }).listen(obj.port);
     obj.eventHandler = function (type, message) { connectionHandler(type, message, null); };
     return obj;
