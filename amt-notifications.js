@@ -38,73 +38,17 @@ function CreateNotificationHandler(logger){
         else { console.log('Received AMT event!'); }
         if (type == "message"){
             console.log('Raw Message From AMT:\n' + message + '\n');
-            const events = require('./amtevents');
-            let amtEvents = events.CreateAmtEventsHandler();
-            let parsedMsg = amtEvents.handleAmtEvent(message, null, null);
-            if (parsedMsg == null){ parsedMsg = "Unable to parse event message."; }
-            if (obj.log !== null) { obj.log(JSON.stringify(parsedMsg)); }
-            else { console.log(JSON.stringify(parsedMsg)); }
+            const parseString = require('xml2js').parseString;
+            parseString(message, function(err, result){
+                if (err) { console.log("Error: ", err); }
+                else {
+                    if (obj.log !== null) { obj.log(JSON.stringify(result)); }
+                    else { console.log(JSON.stringify(result)); }
+                }
+            });
         }
     };
     return obj;
 }
 
 module.exports = CreateNotificationHandler;
-
-function parseJSONString(string){
-    var newString = '';
-    var tabs = 0;
-    for(let x = 0; x < string.length; x++){
-        if((string.charAt(x) !== '{') && (string.charAt(x) !== '}') && (string.charAt(x) !== ',')){
-            newString += string.charAt(x);
-        }
-        if ((x==0) && (string.charAt(x) == '{')){
-            newString = string.charAt(x) + '\n';
-            tabs++;
-            for (let y = 0; y < tabs; y++){
-                newString += '\t';
-            }
-        }
-        if((x != 0) && (string.charAt(x) == '{')){
-            newString += '\n';
-            tabs++;
-            for (let y = 0; y < tabs; y++){
-                newString += '\t';
-            }
-            newString += string.charAt(x) + '\n';
-            tabs++;
-            for (let y = 0; y < tabs; y++){
-                newString += '\t';
-            }
-        }
-        if ((string.charAt(x) == ',') && (string.charAt(x-1) != '}')){
-            newString += string.charAt(x) + '\n';
-            for (let y = 0; y < tabs; y++){
-                newString += '\t';
-            }
-        } else if ((string.charAt(x) == ',') && (string.charAt(x-1) == '}')){
-            newString += '\n';
-            tabs--;
-            for (let y = 0; y < tabs; y++){
-                newString += '\t';
-            } 
-            newString += string.charAt(x-1) + string.charAt(x) + '\n';
-            tabs--;
-            for (let y = 0; y < tabs; y++){
-                newString += '\t';
-            }
-        } else if ((string.charAt(x) == '}') && (string.charAt(x+1) != ',')){
-            newString += '\n';
-            tabs--;
-            for (let y = 0; y < tabs; y++){
-                newString += '\t';
-            }
-            newString += string.charAt(x) + '\n';
-            tabs--;
-            for (let y = 0; y < tabs; y++){
-                newString += '\t';
-            }
-        }
-    }
-    return newString;
-}
