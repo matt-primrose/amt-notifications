@@ -46,8 +46,8 @@ function CreateNotificationHandler(logger){
                     message.UUID = Header["b:MessageID"][0];
                     message.Time = Body["g:IndicationTime"][0]["h:Datetime"];
                     message.AlertType = Body["g:AlertType"][0];
-                    message.PerceivedSeverity = Body["g:PerceivedSeverity"][0];
-                    message.ProbableCause = Body["g:ProbableCause"][0];
+                    message.PerceivedSeverity = perceivedSeverityMapping[Body["g:PerceivedSeverity"][0]];
+                    message.ProbableCause = probableCauseMapping[Body["g:ProbableCause"][0]];
                     message.SystemName = Body["g:SystemName"][0];
                     message.ID = Body["g:MessageID"][0];
                     message.Arg = Body["g:MessageArguments"][0];
