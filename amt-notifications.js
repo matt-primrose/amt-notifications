@@ -44,6 +44,7 @@ function CreateNotificationHandler(logger){
                     const Body = result["a:Envelope"]["a:Body"][0]["g:CIM_AlertIndication"][0];
                     let message = new Object();
                     message.UUID = Header["b:MessageID"][0];
+                    message.OwningEntity = Body["g:OwningEntity"][0];
                     message.Time = Body["g:IndicationTime"][0]["h:Datetime"];
                     message.AlertType = Body["g:AlertType"][0];
                     message.PerceivedSeverity = perceivedSeverityMapping[Body["g:PerceivedSeverity"][0]];
@@ -58,7 +59,7 @@ function CreateNotificationHandler(logger){
                         //Ignore message.Arg
                         message.Text = alertMapping[message.ID];
                     }
-                    if (obj.log !== null) { obj.log(message.Text); }
+                    if (obj.log !== null) { obj.log("Event information:\n   System Name: " + message.SystemName +"\n   Time: " + message.Time +"\n   Event Message: " + message.Text +"\n   Alert Type: " + message.AlertType +"\n   Perceived Severity: " + message.PerceivedSeverity +"\n   Probable Cause: " + message.ProbableCause +"\n   Owning Entity: " + message.OwningEntity); }
                 }
             });
         }
