@@ -41,6 +41,7 @@ function CreateNotificationHandler(logger){
             // Parse the XML to JSON
             const parseString = require('xml2js').parseString;
             parseString(message, function(err, result){
+                if (result == null) { obj.log("Not an AMT event"); return; }
                 if (err) { console.log("Error: ", err); }
                 else {
                     //Debug console.log used to see raw JSON message
@@ -474,14 +475,14 @@ const alertMapping = {
     "PLAT0721":"The System %1s encountered firmware progress - memory initialization exit.",
     "PLAT0722":"The System %1s encountered firmware progress - hard drive initialization entry.",
     "PLAT0723":"The System %1s encountered firmware progress - hard drive initialization exit.",
-    "PLAT0724":"The System %1s encountered firmware progress -user authentication.",
-    "PLAT0728":"The System %1s encountered firmware progress - USR resource configuration entry.",
-    "PLAT0729":"The System %1s encountered firmware progress - USR resource configuration exit.",
+    "PLAT0724":"The System %1s encountered firmware progress - user authentication.",
+    "PLAT0728":"The System %1s encountered firmware progress - USB resource configuration entry.",
+    "PLAT0729":"The System %1s encountered firmware progress - USB resource configuration exit.",
     "PLAT0730":"The System %1s encountered firmware progress - PCI recource configuration entry.",
     "PLAT0731":"The System %1s encountered firmware progress - PCI recource configuration exit.",
     "PLAT0732":"The System %1s encountered firmware progress - Option ROM initialization entry.",
     "PLAT0733":"The System %1s encountered firmware progress - Option ROM initialization entry exit.",
-    "PLAT0734":"The System %1s encountered firmware progress -video initialization entry entry.",
+    "PLAT0734":"The System %1s encountered firmware progress - video initialization entry entry.",
     "PLAT0735":"The System %1s encountered firmware progress - video initialization entry exit.",
     "PLAT0736":"The System %1s encountered firmware progress - cache initializationentry.",
     "PLAT0737":"The System %1s encountered firmware progress - cache initialization exit.",

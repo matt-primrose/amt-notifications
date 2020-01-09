@@ -41,15 +41,24 @@ function HttpServer(port, connectionHandler, consoleLog) {
     let obj = new Object();
     obj.port = port;
     obj.httpServer = new http.createServer(function(req, res){
-        const chunks = [];
-        // AMT sends event data as data chunks when sending POST
-        req.on('data', chunk => chunks.push(chunk));
-        // Got all the chunks
-        req.on('end', () => {
-            // Merge the chunks and send to amt-notifications.js
-            const data = Buffer.concat(chunks);
-            obj.eventHandler('message', data);
-        });
+        console.log(req.headers);
+        if (req.headers['authorization'] == undefined){
+            console.log("not authorized");
+            res.writeHead(401, { 'Content-Type': 'text/html', 'WWW-Authenticate': 'Digest realm="AMT_Events", nonce="1234", algorithm=MD5, qop="auth"' });
+            res.end('Not Authorized');
+        } else {
+            console.log("Authorization Headers: ")
+            console.log(req.headers);
+            const chunks = [];
+            // AMT sends event data as data chunks when sending POST
+            req.on('data', chunk => chunks.push(chunk));
+            // Got all the chunks
+            req.on('end', () => {
+                // Merge the chunks and send to amt-notifications.js
+                const data = Buffer.concat(chunks);
+                obj.eventHandler('message', data);
+            });
+        }
     }).listen(obj.port);
     obj.eventHandler = function (type, message) { connectionHandler(type, message, null); };
     return obj;
