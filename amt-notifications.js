@@ -34,12 +34,18 @@ function CreateNotificationHandler(logger){
     };
     obj.connectionHandler = function(type, message, connection){
         if (obj.log !== null) { obj.log('Received AMT event!'); } else { console.log('Received AMT event!'); }
+        // If we get a "message" then it's AMT Event XML data
         if (type == "message"){
-            console.log('Raw Message From AMT:\n' + message + '\n');
+            //Debug console.log used to see raw XML message
+            //console.log('Raw XML Message From AMT:\n' + message + '\n');
+            // Parse the XML to JSON
             const parseString = require('xml2js').parseString;
             parseString(message, function(err, result){
                 if (err) { console.log("Error: ", err); }
                 else {
+                    //Debug console.log used to see raw JSON message
+                    //console.log('Raw JSON Message from AMT:\n' + result + '\n');
+                    // Pull out the interesting parts of the event data 
                     const Header = result["a:Envelope"]["a:Header"][0];
                     const Body = result["a:Envelope"]["a:Body"][0]["g:CIM_AlertIndication"][0];
                     let message = new Object();
@@ -53,11 +59,12 @@ function CreateNotificationHandler(logger){
                     message.Arg = Body["g:MessageArguments"][0];
                     if (typeof alertMapping[message.ID] == "object"){
                         //Use Arg as part of message.ID lookup
-                        message.Text = alertMapping[message.ID][message.Arg];
+                        message.Text = alertMapping[message.ID][message.Arg.toString()];
                     } else {
                         //Ignore message.Arg
                         message.Text = alertMapping[message.ID];
                     }
+                    // Format and present data to console
                     if (obj.log !== null) { obj.log("Event information:\n   System Name: " + message.SystemName +"\n   Time: " + message.Time +"\n   Event Message: " + message.Text +"\n   Alert Type: " + message.AlertType +"\n   Perceived Severity: " + message.PerceivedSeverity +"\n   Probable Cause: " + message.ProbableCause +"\n   Owning Entity: " + message.OwningEntity); }
                 }
             });

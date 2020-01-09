@@ -42,8 +42,11 @@ function HttpServer(port, connectionHandler, consoleLog) {
     obj.port = port;
     obj.httpServer = new http.createServer(function(req, res){
         const chunks = [];
+        // AMT sends event data as data chunks when sending POST
         req.on('data', chunk => chunks.push(chunk));
+        // Got all the chunks
         req.on('end', () => {
+            // Merge the chunks and send to amt-notifications.js
             const data = Buffer.concat(chunks);
             obj.eventHandler('message', data);
         });
