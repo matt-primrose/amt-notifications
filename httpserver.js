@@ -28,7 +28,6 @@ limitations under the License.
 
 "use strict";
 const http = require('http');
-const qs = require('querystring');
 
 /**
  * @constructor WebSocketServer
@@ -41,31 +40,24 @@ function HttpServer(port, connectionHandler, consoleLog) {
     let obj = new Object();
     obj.port = port;
     obj.httpServer = new http.createServer(function(req, res){
-        console.log(req.headers);
-        if (req.headers['authorization'] == undefined){
-            console.log("not authorized");
-            res.writeHead(401, { 'Content-Type': 'text/html', 'WWW-Authenticate': 'Digest realm="AMT_Events", nonce="1234", algorithm=MD5, qop="auth"' });
-            res.end('Not Authorized');
-        } else {
-            const chunks = [];
+        console.log("received message!");
+        // if (req.headers['authorization'] == undefined){
+        //     //console.log("not authorized");
+        //     res.writeHead(401, { 'Content-Type': 'text/html', 'WWW-Authenticate': 'Digest realm="AMT_Events", nonce="1234", algorithm=MD5, qop="auth"' });
+        //     res.end('Not Authorized');
+        // } else {
+            //console.log(data.name);
+            const chunks = new Array();
             // AMT sends event data as data chunks when sending POST
             req.on('data', chunk => chunks.push(chunk));
             // Got all the chunks
             req.on('end', () => {
-                // Merge the chunks and send to amt-notifications.js
-                const data = {
-                    "name": "",
-                    "event": Buffer.concat(chunks)
-                };
-                let authStr = req.headers.authorization.split(", ");
-                for (var x in authStr){
-                    if (authStr[x].substr(0, 15) == "Digest username") {
-                        data.name = authStr[x].split('=')[1];
-                    }
-                }
+                // Merge the chunks
+                let data = Buffer.concat(chunks);
+                // Check if this was an anonymous push.  Don't send if anonymous.
                 obj.eventHandler('message', data);
             });
-        }
+        //}
     }).listen(obj.port);
     obj.eventHandler = function (type, message) { connectionHandler(type, message, null); };
     return obj;

@@ -39,19 +39,18 @@ function CreateNotificationHandler(logger){
             //Debug console.log used to see raw XML message
             //console.log('Raw XML Message From AMT:\n' + message + '\n');
             // Parse the XML to JSON
-            const deviceName = message.name;
             const parseString = require('xml2js').parseString;
-            parseString(message.event, function(err, result){
+            parseString(message, function(err, result){
                 if (result == null) { obj.log("Not an AMT event"); return; }
                 if (err) { console.log("Error: ", err); }
                 else {
                     //Debug console.log used to see raw JSON message
-                    //console.log('Raw JSON Message from AMT:\n' + result + '\n');
+                    console.log('Raw JSON Message from AMT:\n' + JSON.stringify(result) + '\n');
                     // Pull out the interesting parts of the event data 
                     const Header = result["a:Envelope"]["a:Header"][0];
                     const Body = result["a:Envelope"]["a:Body"][0]["g:CIM_AlertIndication"][0];
                     let message = new Object();
-                    message.DeviceName = deviceName;
+                    message.DeviceName = Body["g:MessageArguments"][0];
                     message.OwningEntity = Body["g:OwningEntity"][0];
                     message.Time = Body["g:IndicationTime"][0]["h:Datetime"];
                     message.AlertType = alertTypeMapping[Body["g:AlertType"][0]];
@@ -59,14 +58,15 @@ function CreateNotificationHandler(logger){
                     message.ProbableCause = probableCauseMapping[Body["g:ProbableCause"][0]];
                     message.SystemName = Body["g:SystemName"][0];
                     message.ID = Body["g:MessageID"][0];
-                    message.Arg = Body["g:MessageArguments"][0];
-                    if (typeof alertMapping[message.ID] == "object"){
-                        //Use Arg as part of message.ID lookup
-                        message.Text = alertMapping[message.ID][message.Arg.toString()];
-                    } else {
-                        //Ignore message.Arg
-                        message.Text = alertMapping[message.ID];
-                    }
+                    message.Text = alertMapping[message.ID];
+                    // message.Arg = Body["g:MessageArguments"][0];
+                    // if (typeof alertMapping[message.ID] == "object"){
+                    //     //if message.ID is an object use Arg as part of message.ID lookup
+                    //     message.Text = alertMapping[message.ID][message.Arg.toString()];
+                    // } else {
+                    //     //replace any %1s with message.Arg
+                    //       message.Text = alertMapping[message.ID].replace('%1s', message.Arg);
+                    // }
                     // Format and present data to console
                     if (obj.log !== null) { obj.log("Event information:\n   Device Name: " + message.DeviceName +"\n   System Name: " + message.SystemName +"\n   Time: " + message.Time +"\n   Event Message: " + message.Text +"\n   Alert Type: " + message.AlertType +"\n   Perceived Severity: " + message.PerceivedSeverity +"\n   Probable Cause: " + message.ProbableCause +"\n   Owning Entity: " + message.OwningEntity); }
                 }
