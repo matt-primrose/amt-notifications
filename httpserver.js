@@ -47,15 +47,22 @@ function HttpServer(port, connectionHandler, consoleLog) {
             res.writeHead(401, { 'Content-Type': 'text/html', 'WWW-Authenticate': 'Digest realm="AMT_Events", nonce="1234", algorithm=MD5, qop="auth"' });
             res.end('Not Authorized');
         } else {
-            console.log("Authorization Headers: ")
-            console.log(req.headers);
             const chunks = [];
             // AMT sends event data as data chunks when sending POST
             req.on('data', chunk => chunks.push(chunk));
             // Got all the chunks
             req.on('end', () => {
                 // Merge the chunks and send to amt-notifications.js
-                const data = Buffer.concat(chunks);
+                const data = {
+                    "name": "",
+                    "event": Buffer.concat(chunks)
+                };
+                let authStr = req.headers.authorization.split(", ");
+                for (var x in authStr){
+                    if (authStr[x].substr(0, 15) == "Digest username") {
+                        data.name = authStr[x].split('=')[1];
+                    }
+                }
                 obj.eventHandler('message', data);
             });
         }
