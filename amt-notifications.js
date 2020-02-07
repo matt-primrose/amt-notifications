@@ -45,7 +45,7 @@ function CreateNotificationHandler(logger){
                 if (err) { console.log("Error: ", err); }
                 else {
                     //Debug console.log used to see raw JSON message
-                    console.log('Raw JSON Message from AMT:\n' + JSON.stringify(result) + '\n');
+                    //console.log('Raw JSON Message from AMT:\n' + JSON.stringify(result) + '\n');
                     // Pull out the interesting parts of the event data 
                     const Header = result["a:Envelope"]["a:Header"][0];
                     const Body = result["a:Envelope"]["a:Body"][0]["g:CIM_AlertIndication"][0];
